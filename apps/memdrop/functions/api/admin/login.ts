@@ -1,5 +1,5 @@
-import { signJWT } from '../../../_lib/jwt.js'
-import type { Env } from '../../../_lib/types.js'
+import { signJWT } from '../../_lib/jwt.js'
+import type { Env } from '../../_lib/types.js'
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 	let body: { password?: string }

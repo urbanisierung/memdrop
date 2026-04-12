@@ -1,6 +1,6 @@
-import { createEvent, getAllEvents } from '../../../../_lib/db.js'
-import type { Env } from '../../../../_lib/types.js'
-import { requireAdmin } from '../../../../_lib/types.js'
+import { createEvent, getAllEvents } from '../../../_lib/db.js'
+import type { Env } from '../../../_lib/types.js'
+import { requireAdmin } from '../../../_lib/types.js'
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
 	if (!(await requireAdmin(request, env.JWT_SECRET)))

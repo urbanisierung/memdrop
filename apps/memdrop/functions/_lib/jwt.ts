@@ -51,7 +51,8 @@ export async function verifyJWT(
 		)
 		if (!valid) return null
 		const parsed = JSON.parse(b64urlDecode(body)) as Record<string, unknown>
-		if (typeof parsed.exp === 'number' && Date.now() / 1000 > parsed.exp) return null
+		if (typeof parsed.exp === 'number' && Date.now() / 1000 > parsed.exp)
+			return null
 		return parsed
 	} catch {
 		return null

@@ -1,6 +1,6 @@
-import { getEvent, updateEventSettings } from '../../../../_lib/db.js'
-import type { Env } from '../../../../_lib/types.js'
-import { requireAdmin } from '../../../../_lib/types.js'
+import { getEvent, updateEventSettings } from '../../../_lib/db.js'
+import type { Env } from '../../../_lib/types.js'
+import { requireAdmin } from '../../../_lib/types.js'
 
 export const onRequestGet: PagesFunction<Env> = async ({
 	request,

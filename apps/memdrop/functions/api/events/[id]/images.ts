@@ -1,5 +1,5 @@
-import { getEvent, getImages, insertImage } from '../../../../_lib/db.js'
-import type { Env } from '../../../../_lib/types.js'
+import { getEvent, getImages, insertImage } from '../../../_lib/db.js'
+import type { Env } from '../../../_lib/types.js'
 
 export const onRequestGet: PagesFunction<Env> = async ({ env, params }) => {
 	const eventId = params.id as string

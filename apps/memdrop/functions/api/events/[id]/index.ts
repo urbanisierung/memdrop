@@ -1,5 +1,5 @@
-import { getEvent } from '../../../../_lib/db.js'
-import type { Env } from '../../../../_lib/types.js'
+import { getEvent } from '../../../_lib/db.js'
+import type { Env } from '../../../_lib/types.js'
 
 export const onRequestGet: PagesFunction<Env> = async ({ env, params }) => {
 	const event = await getEvent(env.DB, params.id as string)

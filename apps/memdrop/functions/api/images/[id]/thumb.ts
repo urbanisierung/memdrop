@@ -1,4 +1,4 @@
-import type { DbImage, Env } from '../../../../_lib/types.js'
+import type { DbImage, Env } from '../../../_lib/types.js'
 
 export const onRequestGet: PagesFunction<Env> = async ({ env, params }) => {
 	const id = params.id as string

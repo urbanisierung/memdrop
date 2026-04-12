@@ -1,14 +1,14 @@
 {
-  "name": "memdrop",
-  "private": true,
-  "version": "0.0.1",
-  "type": "module",
-  "scripts": {
-    "build": "vite build",
-    "check": "biome check .",
-    "dev": "vite dev",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "preview": "vite preview"
-  }
+	"name": "memdrop",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"build": "vite build",
+		"check": "biome check .",
+		"dev": "vite dev",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"preview": "vite preview"
+	}
 }
