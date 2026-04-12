@@ -1,0 +1,13 @@
+{
+  "name": "memdrop",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite dev",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "preview": "vite preview"
+  }
+}
