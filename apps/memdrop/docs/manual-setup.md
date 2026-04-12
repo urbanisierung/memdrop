@@ -1,0 +1,175 @@
+# memdrop — Manual Cloudflare Setup
+
+One-time steps required before local dev or deployment.
+
+---
+
+## Prerequisites
+
+- Cloudflare account (free tier is fine)
+- `wrangler` CLI authenticated: `wrangler login`
+- `pnpm` installed
+
+---
+
+## Step 1 — Create R2 Bucket
+
+```bash
+wrangler r2 bucket create memdrop-images
+```
+
+Verify:
+```bash
+wrangler r2 bucket list
+# should include memdrop-images
+```
+
+---
+
+## Step 2 — Create D1 Database
+
+```bash
+wrangler d1 create memdrop
+```
+
+Copy the `database_id` from the output and paste it into `apps/memdrop/wrangler.toml`:
+
+```toml
+[[d1_databases]]
+binding = "DB"
+database_name = "memdrop"
+database_id = "PASTE_YOUR_DATABASE_ID_HERE"   # ← replace this
+```
+
+---
+
+## Step 3 — Run D1 Migration (Local)
+
+```bash
+cd apps/memdrop
+wrangler d1 execute memdrop --local --file=./migrations/0001_init.sql
+```
+
+---
+
+## Step 4 — Run D1 Migration (Production)
+
+```bash
+wrangler d1 execute memdrop --remote --file=./migrations/0001_init.sql
+```
+
+---
+
+## Step 5 — Set Local Secrets
+
+Edit `apps/memdrop/.dev.vars` (already gitignored):
+
+```
+ADMIN_PASSWORD=choose-a-strong-password
+JWT_SECRET=choose-a-random-string-at-least-32-chars
+```
+
+---
+
+## Step 6 — Local Development
+
+```bash
+cd apps/memdrop
+pnpm dev
+```
+
+Opens at `http://localhost:5173`.
+
+- Gallery link: `http://localhost:5173/#/events/YOUR_EVENT_ID`
+- Admin: `http://localhost:5173/#/admin`
+
+---
+
+## Step 7 — Create a Cloudflare Pages Project
+
+Option A — via Wrangler (first deploy creates the project automatically):
+```bash
+cd apps/memdrop
+pnpm build
+wrangler pages deploy dist/ --project-name=memdrop
+```
+
+Option B — via Dashboard:
+1. Go to Cloudflare Dashboard → Workers & Pages → Create
+2. Choose "Pages" → "Direct Upload"
+3. Name the project `memdrop`
+4. Upload the `dist/` folder
+
+---
+
+## Step 8 — Bind D1 and R2 to the Pages Project (Dashboard)
+
+1. Cloudflare Dashboard → Workers & Pages → `memdrop` → Settings → Functions
+2. Under **D1 database bindings**, add:
+   - Variable name: `DB`
+   - D1 database: `memdrop`
+3. Under **R2 bucket bindings**, add:
+   - Variable name: `BUCKET`
+   - R2 bucket: `memdrop-images`
+
+---
+
+## Step 9 — Set Production Environment Variables (Dashboard)
+
+1. Cloudflare Dashboard → Workers & Pages → `memdrop` → Settings → Environment Variables
+2. Add (mark both as **Encrypted**):
+   - `ADMIN_PASSWORD` = your chosen admin password
+   - `JWT_SECRET` = a random string ≥ 32 characters (generate: `openssl rand -hex 32`)
+
+---
+
+## Step 10 — Deploy
+
+```bash
+cd apps/memdrop
+pnpm build
+wrangler pages deploy dist/ --project-name=memdrop
+```
+
+Your app is live at `https://memdrop.pages.dev` (or your custom domain).
+
+---
+
+## Creating Your First Event
+
+1. Navigate to `https://YOUR_DOMAIN/#/admin`
+2. Enter your admin password
+3. Click **+ New event**, enter:
+   - URL id: `wedding-2026` (used in the share link)
+   - Event name: `Sarah & Tom's Wedding`
+4. Click **Create**
+5. Click **Copy link** → share `https://YOUR_DOMAIN/#/events/wedding-2026` with guests
+
+---
+
+## Redeploy After Changes
+
+```bash
+cd apps/memdrop
+pnpm build
+wrangler pages deploy dist/ --project-name=memdrop
+```
+
+---
+
+## Custom Domain (Optional)
+
+Cloudflare Dashboard → Workers & Pages → `memdrop` → Custom Domains → Set up a custom domain.
+
+---
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| `database_id placeholder` error on deploy | Replace `PLACEHOLDER_REPLACE_AFTER_CF_SETUP` in `wrangler.toml` with real ID from Step 2 |
+| Upload returns 403 | "Allow uploads" toggle is off in admin panel |
+| Gallery shows blank | "Show gallery" toggle is off in admin panel |
+| Images not appearing after upload | Check R2 bucket binding name is exactly `BUCKET` |
+| Admin login fails in production | Verify `ADMIN_PASSWORD` env var is set in CF dashboard (Step 9) |
+| Upload button stays disabled | Network error during upload; check browser console |
