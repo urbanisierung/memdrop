@@ -103,8 +103,8 @@ function NewEventForm({ onDone }: { onDone: () => void }) {
 	const submit = async (e: Event) => {
 		e.preventDefault()
 		if (!id || !name) return
-		await createEvent(id, name)
-		onDone()
+		const ok = await createEvent(id, name)
+		if (ok) onDone()
 	}
 
 	return (

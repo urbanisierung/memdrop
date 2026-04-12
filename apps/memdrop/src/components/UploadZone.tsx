@@ -13,28 +13,30 @@ export function UploadZone() {
 		const files = Array.from(fileList)
 		start()
 
-		// Generate all thumbnails in parallel before uploading
-		const thumbs = await Promise.all(files.map((f) => generateThumbnail(f)))
+		try {
+			// Generate all thumbnails in parallel before uploading
+			const thumbs = await Promise.all(files.map((f) => generateThumbnail(f)))
 
-		const form = new FormData()
-		for (let i = 0; i < files.length; i++) {
-			form.append('files', files[i])
-			form.append('thumbs', thumbs[i], `${files[i].name}.thumb.jpg`)
+			const form = new FormData()
+			for (let i = 0; i < files.length; i++) {
+				form.append('files', files[i])
+				form.append('thumbs', thumbs[i], `${files[i].name}.thumb.jpg`)
+			}
+
+			const res = await fetch(`/api/events/${eventId}/images`, {
+				method: 'POST',
+				body: form,
+			})
+
+			if (res.ok) {
+				const created = (await res.json()) as { id: string; filename: string }[]
+				addImages(created)
+			}
+		} finally {
+			finish()
+			// Reset input so the same files can be re-selected if needed
+			if (inputRef.current) inputRef.current.value = ''
 		}
-
-		const res = await fetch(`/api/events/${eventId}/images`, {
-			method: 'POST',
-			body: form,
-		})
-
-		if (res.ok) {
-			const created = (await res.json()) as { id: string; filename: string }[]
-			addImages(created)
-		}
-
-		finish()
-		// Reset input so the same files can be re-selected if needed
-		if (inputRef.current) inputRef.current.value = ''
 	}
 
 	return (

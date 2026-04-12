@@ -16,7 +16,7 @@ interface AdminStore {
 	state: AdminState
 	login: (password: string) => Promise<boolean>
 	loadEvents: () => Promise<void>
-	createEvent: (id: string, name: string) => Promise<void>
+	createEvent: (id: string, name: string) => Promise<boolean>
 	updateEvent: (
 		id: string,
 		uploadEnabled: boolean,
@@ -71,7 +71,7 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
 
 	createEvent: async (id, name) => {
 		const s = get().state
-		if (s.phase !== 'unlocked') return
+		if (s.phase !== 'unlocked') return false
 		const res = await fetch('/api/admin/events', {
 			method: 'POST',
 			headers: {
@@ -80,7 +80,7 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
 			},
 			body: JSON.stringify({ id, name }),
 		})
-		if (!res.ok) return
+		if (!res.ok) return false
 		const event = (await res.json()) as AdminEvent
 		set((cur) => ({
 			state:
@@ -88,6 +88,7 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
 					? { ...cur.state, events: [event, ...cur.state.events] }
 					: cur.state,
 		}))
+		return true
 	},
 
 	updateEvent: async (id, uploadEnabled, viewEnabled) => {
