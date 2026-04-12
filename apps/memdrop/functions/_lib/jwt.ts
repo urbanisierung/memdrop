@@ -50,7 +50,9 @@ export async function verifyJWT(
 			new TextEncoder().encode(`${header}.${body}`),
 		)
 		if (!valid) return null
-		return JSON.parse(b64urlDecode(body)) as Record<string, unknown>
+		const parsed = JSON.parse(b64urlDecode(body)) as Record<string, unknown>
+		if (typeof parsed.exp === 'number' && Date.now() / 1000 > parsed.exp) return null
+		return parsed
 	} catch {
 		return null
 	}
