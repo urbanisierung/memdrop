@@ -30,6 +30,8 @@ export const onRequestPut: PagesFunction<Env> = async ({
 	if (body.uploadEnabled === undefined || body.viewEnabled === undefined) {
 		return new Response('Bad Request', { status: 400 })
 	}
+	const existing = await getEvent(env.DB, params.id as string)
+	if (!existing) return new Response('Not Found', { status: 404 })
 	await updateEventSettings(env.DB, params.id as string, {
 		uploadEnabled: body.uploadEnabled,
 		viewEnabled: body.viewEnabled,

@@ -29,37 +29,36 @@ export const onRequestPost: PagesFunction<Env> = async ({
 	if (files.length !== thumbs.length)
 		return new Response('files/thumbs count mismatch', { status: 400 })
 
-	const created: { id: string; filename: string }[] = []
+	try {
+		const created = await Promise.all(
+			files.map(async (file, i) => {
+				const id = crypto.randomUUID()
+				const thumb = thumbs[i]
+				await Promise.all([
+					env.BUCKET.put(
+						`events/${eventId}/orig/${id}`,
+						await file.arrayBuffer(),
+						{ httpMetadata: { contentType: file.type || 'image/jpeg' } },
+					),
+					env.BUCKET.put(
+						`events/${eventId}/thumb/${id}.jpg`,
+						await thumb.arrayBuffer(),
+						{ httpMetadata: { contentType: 'image/jpeg' } },
+					),
+				])
+				await insertImage(env.DB, {
+					id,
+					eventId,
+					filename: file.name,
+					mimeType: file.type || 'image/jpeg',
+				})
+				return { id, filename: file.name }
+			}),
+		)
 
-	await Promise.all(
-		files.map(async (file, i) => {
-			const id = crypto.randomUUID()
-			const thumb = thumbs[i]
-			await Promise.all([
-				env.BUCKET.put(
-					`events/${eventId}/orig/${id}`,
-					await file.arrayBuffer(),
-					{
-						httpMetadata: { contentType: file.type || 'image/jpeg' },
-					},
-				),
-				env.BUCKET.put(
-					`events/${eventId}/thumb/${id}.jpg`,
-					await thumb.arrayBuffer(),
-					{
-						httpMetadata: { contentType: 'image/jpeg' },
-					},
-				),
-			])
-			await insertImage(env.DB, {
-				id,
-				eventId,
-				filename: file.name,
-				mimeType: file.type || 'image/jpeg',
-			})
-			created.push({ id, filename: file.name })
-		}),
-	)
-
-	return Response.json(created, { status: 201 })
+		return Response.json(created, { status: 201 })
+	} catch (err) {
+		console.error('Upload failed:', err)
+		return new Response('Upload failed', { status: 500 })
+	}
 }

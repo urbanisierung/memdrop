@@ -1,4 +1,4 @@
-import { createEvent, getAllEvents, getEvent } from '../../../../_lib/db.js'
+import { createEvent, getAllEvents } from '../../../../_lib/db.js'
 import type { Env } from '../../../../_lib/types.js'
 import { requireAdmin } from '../../../../_lib/types.js'
 
@@ -21,6 +21,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 	if (!body.id || !body.name)
 		return new Response('Bad Request', { status: 400 })
 	await createEvent(env.DB, { id: body.id, name: body.name })
-	const event = await getEvent(env.DB, body.id)
-	return Response.json(event, { status: 201 })
+	return Response.json(
+		{ id: body.id, name: body.name, uploadEnabled: true, viewEnabled: true },
+		{ status: 201 },
+	)
 }
