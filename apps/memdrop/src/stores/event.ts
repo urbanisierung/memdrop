@@ -43,7 +43,7 @@ export const useEventStore = create<EventState>((set) => ({
 			uploadEnabled: boolean
 			viewEnabled: boolean
 		}
-		const images = (await imagesRes.json()) as Image[]
+		const images = imagesRes.ok ? ((await imagesRes.json()) as Image[]) : []
 		set({ ...event, images, loading: false })
 	},
 

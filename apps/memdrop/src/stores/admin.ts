@@ -93,7 +93,7 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
 	updateEvent: async (id, uploadEnabled, viewEnabled) => {
 		const s = get().state
 		if (s.phase !== 'unlocked') return
-		await fetch(`/api/admin/events/${id}`, {
+		const res = await fetch(`/api/admin/events/${id}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -101,6 +101,7 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
 			},
 			body: JSON.stringify({ uploadEnabled, viewEnabled }),
 		})
+		if (!res.ok) return
 		set((cur) => ({
 			state:
 				cur.state.phase === 'unlocked'

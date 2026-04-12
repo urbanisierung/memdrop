@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeAll } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { generateThumbnail } from './thumbnail.js'
 
 // jsdom doesn't implement Canvas or URL.createObjectURL. Stub the minimal surface used by generateThumbnail.
@@ -46,10 +46,18 @@ describe('generateThumbnail', () => {
 		let capturedHeight = 0
 		const ctx = { drawImage: vi.fn() }
 		const canvas = {
-			get width() { return capturedWidth },
-			set width(v: number) { capturedWidth = v },
-			get height() { return capturedHeight },
-			set height(v: number) { capturedHeight = v },
+			get width() {
+				return capturedWidth
+			},
+			set width(v: number) {
+				capturedWidth = v
+			},
+			get height() {
+				return capturedHeight
+			},
+			set height(v: number) {
+				capturedHeight = v
+			},
 			getContext: () => ctx,
 			toBlob: (cb: (b: Blob) => void, type: string) =>
 				cb(new Blob(['pixel'], { type })),
@@ -73,7 +81,7 @@ describe('generateThumbnail', () => {
 		const file = new File(['data'], 'small.jpg', { type: 'image/jpeg' })
 		await generateThumbnail(file, 400)
 
-		expect(capturedWidth).toBe(200)  // not upscaled
+		expect(capturedWidth).toBe(200) // not upscaled
 		globalThis.Image = origImage
 	})
 })
