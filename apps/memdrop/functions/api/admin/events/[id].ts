@@ -1,4 +1,9 @@
-import { deleteEventData, getEvent, getImages, updateEventSettings } from '../../../_lib/db.js'
+import {
+	deleteEventData,
+	getEvent,
+	getImages,
+	updateEventSettings,
+} from '../../../_lib/db.js'
 import type { Env } from '../../../_lib/types.js'
 import { requireAdmin } from '../../../_lib/types.js'
 
