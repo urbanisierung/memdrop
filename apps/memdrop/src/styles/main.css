@@ -194,6 +194,10 @@ h1 {
 	border: 1px solid var(--border);
 }
 
+.btn--danger {
+	background: #ef4444;
+}
+
 /* ── Forms ──────────────────────────────────────────── */
 
 .input {
@@ -273,6 +277,12 @@ h1 {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
+}
+
+.event-row__confirm-text {
+	font-size: 0.875rem;
+	color: var(--muted);
+	align-self: center;
 }
 
 .toggle {

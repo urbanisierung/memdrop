@@ -22,6 +22,7 @@ interface AdminStore {
 		uploadEnabled: boolean,
 		viewEnabled: boolean,
 	) => Promise<void>
+	deleteEvent: (id: string) => Promise<void>
 }
 
 function getStoredToken(): string | null {
@@ -111,6 +112,25 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
 							events: cur.state.events.map((e) =>
 								e.id === id ? { ...e, uploadEnabled, viewEnabled } : e,
 							),
+						}
+					: cur.state,
+		}))
+	},
+
+	deleteEvent: async (id) => {
+		const s = get().state
+		if (s.phase !== 'unlocked') return
+		const res = await fetch(`/api/admin/events/${id}`, {
+			method: 'DELETE',
+			headers: { Authorization: `Bearer ${s.token}` },
+		})
+		if (!res.ok) return
+		set((cur) => ({
+			state:
+				cur.state.phase === 'unlocked'
+					? {
+							...cur.state,
+							events: cur.state.events.filter((e) => e.id !== id),
 						}
 					: cur.state,
 		}))

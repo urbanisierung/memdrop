@@ -47,8 +47,9 @@ function EventRow({
 		viewEnabled: boolean
 	}
 }) {
-	const { updateEvent } = useAdminStore()
-	const link = `${window.location.origin}/#/events/${event.id}`
+	const { updateEvent, deleteEvent } = useAdminStore()
+	const [confirming, setConfirming] = useState(false)
+	const link = `${window.location.origin}/events/${event.id}`
 
 	const toggle = (field: 'upload' | 'view', checked: boolean) => {
 		updateEvent(
@@ -90,6 +91,36 @@ function EventRow({
 				>
 					Copy link
 				</button>
+				{confirming ? (
+					<div class="row">
+						<span class="event-row__confirm-text">Delete all photos?</span>
+						<button
+							type="button"
+							class="btn btn--sm btn--danger"
+							onClick={() => {
+								deleteEvent(event.id)
+								setConfirming(false)
+							}}
+						>
+							Delete
+						</button>
+						<button
+							type="button"
+							class="btn btn--sm btn--secondary"
+							onClick={() => setConfirming(false)}
+						>
+							Cancel
+						</button>
+					</div>
+				) : (
+					<button
+						type="button"
+						class="btn btn--sm btn--danger"
+						onClick={() => setConfirming(true)}
+					>
+						Delete gallery
+					</button>
+				)}
 			</div>
 		</div>
 	)
