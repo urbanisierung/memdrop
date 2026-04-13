@@ -56,8 +56,8 @@ export const onRequestDelete: PagesFunction<Env> = async ({
 	const event = await getEvent(env.DB, eventId)
 	if (!event) return new Response('Not Found', { status: 404 })
 
-	// Fetch image IDs before deletion so we can clean up R2
-	const images = await getImages(env.DB, eventId)
+	// Fetch all image IDs (no limit) before deletion so we can clean up R2
+	const images = await getImages(env.DB, eventId, Number.MAX_SAFE_INTEGER)
 
 	// Delete originals and thumbnails from R2
 	await Promise.all(

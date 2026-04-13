@@ -27,7 +27,7 @@ export const onRequestGet: PagesFunction<Env> = async ({
 
 	return Response.json(
 		{ images, total },
-		{ headers: { 'Cache-Control': 'public, max-age=60' } },
+		{ headers: { 'Cache-Control': 'private, max-age=60' } },
 	)
 }
 

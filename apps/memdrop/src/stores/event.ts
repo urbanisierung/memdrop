@@ -65,9 +65,13 @@ export const useEventStore = create<EventState>((set, get) => ({
 			set({ loadingMore: false })
 			return
 		}
-		const { images } = (await res.json()) as { images: Image[]; total: number }
+		const { images, total } = (await res.json()) as {
+			images: Image[]
+			total: number
+		}
 		set((prev) => ({
 			images: [...prev.images, ...images],
+			total,
 			loadingMore: false,
 		}))
 	},
