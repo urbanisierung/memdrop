@@ -9,6 +9,7 @@
 		"dev": "vite dev",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"deploy": "rm -f dist/wrangler.json .wrangler/deploy/config.json && wrangler pages deploy dist/ --project-name=memdrop"
 	}
 }

@@ -5,7 +5,7 @@ pages_build_output_dir = "dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "memdrop"
-database_id = "PLACEHOLDER_REPLACE_AFTER_CF_SETUP"
+database_id = "513a1c74-60ee-4b5e-b98d-fd8d44b8b705"
 
 [[r2_buckets]]
 binding = "BUCKET"
