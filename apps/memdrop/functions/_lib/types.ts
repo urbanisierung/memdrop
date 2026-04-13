@@ -5,6 +5,7 @@ export interface Env {
 	BUCKET: R2Bucket
 	ADMIN_PASSWORD: string
 	JWT_SECRET: string
+	ASSETS: Fetcher
 }
 
 // DB row shapes (snake_case from D1)
