@@ -72,6 +72,17 @@ h1 {
 	text-align: center;
 	padding: 3rem 0;
 }
+
+.scroll-sentinel {
+	height: 1px;
+}
+
+.load-more-spinner {
+	text-align: center;
+	padding: 1.5rem 0;
+	color: var(--muted);
+	font-size: 0.875rem;
+}
 .not-found {
 	text-align: center;
 	padding: 4rem 1rem;
