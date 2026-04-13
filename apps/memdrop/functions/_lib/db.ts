@@ -54,6 +54,17 @@ export async function updateEventSettings(
 		.run()
 }
 
+export async function deleteEventData(
+	db: D1Database,
+	eventId: string,
+): Promise<void> {
+	await db
+		.prepare('DELETE FROM images WHERE event_id = ?')
+		.bind(eventId)
+		.run()
+	await db.prepare('DELETE FROM events WHERE id = ?').bind(eventId).run()
+}
+
 export async function getImages(
 	db: D1Database,
 	eventId: string,
