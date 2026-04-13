@@ -54,21 +54,42 @@ export async function updateEventSettings(
 		.run()
 }
 
+export async function deleteEventData(
+	db: D1Database,
+	eventId: string,
+): Promise<void> {
+	await db.prepare('DELETE FROM images WHERE event_id = ?').bind(eventId).run()
+	await db.prepare('DELETE FROM events WHERE id = ?').bind(eventId).run()
+}
+
 export async function getImages(
 	db: D1Database,
 	eventId: string,
+	limit = 20,
+	offset = 0,
 ): Promise<ApiImage[]> {
 	const { results } = await db
 		.prepare(
-			'SELECT id, filename, uploaded_at FROM images WHERE event_id = ? ORDER BY uploaded_at DESC',
+			'SELECT id, filename, uploaded_at FROM images WHERE event_id = ? ORDER BY uploaded_at DESC LIMIT ? OFFSET ?',
 		)
-		.bind(eventId)
+		.bind(eventId, limit, offset)
 		.all<Pick<DbImage, 'id' | 'filename' | 'uploaded_at'>>()
 	return results.map((r) => ({
 		id: r.id,
 		filename: r.filename,
 		uploadedAt: r.uploaded_at,
 	}))
+}
+
+export async function countImages(
+	db: D1Database,
+	eventId: string,
+): Promise<number> {
+	const row = await db
+		.prepare('SELECT COUNT(*) as count FROM images WHERE event_id = ?')
+		.bind(eventId)
+		.first<{ count: number }>()
+	return row?.count ?? 0
 }
 
 export async function insertImage(

@@ -1,4 +1,4 @@
-import { useEffect } from 'preact/hooks'
+import { useCallback, useEffect } from 'preact/hooks'
 import { useEventStore } from '../stores/event.js'
 import { PhotoGrid } from './PhotoGrid.js'
 import { UploadZone } from './UploadZone.js'
@@ -8,12 +8,27 @@ interface Props {
 }
 
 export function GalleryView({ eventId }: Props) {
-	const { load, loading, error, name, uploadEnabled, viewEnabled, images } =
-		useEventStore()
+	const {
+		load,
+		loadMore,
+		loading,
+		error,
+		name,
+		uploadEnabled,
+		viewEnabled,
+		images,
+		total,
+		loadingMore,
+	} = useEventStore()
 
 	useEffect(() => {
 		load(eventId)
 	}, [eventId, load])
+
+	const handleLoadMore = useCallback(
+		() => loadMore(eventId),
+		[loadMore, eventId],
+	)
 
 	if (loading)
 		return (
@@ -31,12 +46,17 @@ export function GalleryView({ eventId }: Props) {
 	return (
 		<div class="page">
 			<h1 class="event-name">{name}</h1>
-			{uploadEnabled && <UploadZone />}
 			{viewEnabled ? (
-				<PhotoGrid images={images} />
+				<PhotoGrid
+					images={images}
+					total={total}
+					loadingMore={loadingMore}
+					onLoadMore={handleLoadMore}
+				/>
 			) : (
 				<p class="status">Gallery is not available right now.</p>
 			)}
+			{uploadEnabled && <UploadZone />}
 		</div>
 	)
 }

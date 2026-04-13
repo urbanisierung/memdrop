@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks'
+import { useEffect, useRef, useState } from 'preact/hooks'
 import { Lightbox } from './Lightbox.js'
 
 interface Image {
@@ -8,12 +8,32 @@ interface Image {
 
 interface Props {
 	images: Image[]
+	total: number
+	loadingMore: boolean
+	onLoadMore: () => void
 }
 
-export function PhotoGrid({ images }: Props) {
+export function PhotoGrid({ images, total, loadingMore, onLoadMore }: Props) {
 	const [selected, setSelected] = useState<string | null>(null)
+	const sentinelRef = useRef<HTMLDivElement>(null)
+	const onLoadMoreRef = useRef(onLoadMore)
+	onLoadMoreRef.current = onLoadMore
 
-	if (images.length === 0) return <p class="empty">No photos yet.</p>
+	useEffect(() => {
+		if (images.length >= total || !sentinelRef.current) return
+		const el = sentinelRef.current
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) onLoadMoreRef.current()
+			},
+			{ rootMargin: '200px' },
+		)
+		observer.observe(el)
+		return () => observer.disconnect()
+	}, [images.length, total])
+
+	if (images.length === 0 && !loadingMore)
+		return <p class="empty">No photos yet.</p>
 
 	return (
 		<>
@@ -35,6 +55,10 @@ export function PhotoGrid({ images }: Props) {
 					</button>
 				))}
 			</div>
+			{images.length < total && (
+				<div ref={sentinelRef} class="scroll-sentinel" />
+			)}
+			{loadingMore && <p class="load-more-spinner">Loading…</p>}
 			{selected && (
 				<Lightbox imageId={selected} onClose={() => setSelected(null)} />
 			)}

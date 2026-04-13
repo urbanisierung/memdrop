@@ -1,13 +1,34 @@
-import { getEvent, getImages, insertImage } from '../../../_lib/db.js'
+import {
+	countImages,
+	getEvent,
+	getImages,
+	insertImage,
+} from '../../../_lib/db.js'
 import type { Env } from '../../../_lib/types.js'
 
-export const onRequestGet: PagesFunction<Env> = async ({ env, params }) => {
+export const onRequestGet: PagesFunction<Env> = async ({
+	env,
+	params,
+	request,
+}) => {
 	const eventId = params.id as string
 	const event = await getEvent(env.DB, eventId)
 	if (!event) return new Response('Not Found', { status: 404 })
-	if (!event.viewEnabled) return Response.json([])
-	const images = await getImages(env.DB, eventId)
-	return Response.json(images)
+	if (!event.viewEnabled) return Response.json({ images: [], total: 0 })
+
+	const url = new URL(request.url)
+	const limit = Math.min(Number(url.searchParams.get('limit') ?? 20), 100)
+	const offset = Math.max(Number(url.searchParams.get('offset') ?? 0), 0)
+
+	const [images, total] = await Promise.all([
+		getImages(env.DB, eventId, limit, offset),
+		countImages(env.DB, eventId),
+	])
+
+	return Response.json(
+		{ images, total },
+		{ headers: { 'Cache-Control': 'private, max-age=60' } },
+	)
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({
