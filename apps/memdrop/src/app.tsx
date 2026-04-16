@@ -1,5 +1,6 @@
 import { AdminPanel } from './components/AdminPanel.js'
 import { GalleryView } from './components/GalleryView.js'
+import { Landing } from './components/Landing.js'
 import { useHash } from './router.js'
 
 export function App() {
@@ -15,9 +16,5 @@ export function App() {
 	const hashEventMatch = hash.match(/^#\/events\/([^/]+)/)
 	if (hashEventMatch) return <GalleryView eventId={hashEventMatch[1]} />
 
-	return (
-		<div class="not-found">
-			<p>No event found. Check your link.</p>
-		</div>
-	)
+	return <Landing />
 }

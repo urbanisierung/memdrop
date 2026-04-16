@@ -8,3 +8,4 @@ dist/
 apps/frontend/public/sitemap.xml
 apps/frontend/public/feed.xml
 apps/frontend/functions/_blog-meta.ts
+.superpowers
